@@ -1,17 +1,44 @@
-// This is the JavaScript entry file - your code begins here
-// Do not delete or rename this file ********
+                    //===============================\\
+                   // |           FitLit            | \\
+                  //  |    Turing Mod 2 Project 2   |  \\
+                 //   |        Dane Anderson        |   \\
+                //    ===============================    \\
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// JS File Imports 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+var User = require('./User');
+var UserRepository = require('./UserRepository');
+const userData = require('./data/users');
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Build User Repository 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Creating the repo skeleton
+var userClasses = [];
+// converting the object array to a class instance of User array
+userData.map((user) => {
+    userClasses.push(new User(user))
+})
+// Creating the class instance of UserRepository object
+const userRepo = new UserRepository(userClasses);
 
-console.log(userData,"<>>>>userData")
-// An example of how you tell webpack to use a CSS file
-import './css/styles.css';
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// query selector variables go here 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// An example of how you tell webpack to use an image (also need to link to it in the index.html)
-import './images/turing-logo.png'
 
-console.log('This is the JavaScript entry file - your code begins here.');
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// event listeners go here 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// An example of how you tell webpack to use a JS file
 
-import userData from './data/users';
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Global Variables Go here 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-import UserRepository from './UserRepository';
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// functions and event handlers go here 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

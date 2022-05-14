@@ -676,4 +676,5 @@
     ]
   }
 ];
-export default userData;
+module.exports = userData
+//export default userData;
