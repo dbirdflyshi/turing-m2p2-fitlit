@@ -1,0 +1,27 @@
+/**
+ * @license
+ * MyFonts Webfont Build ID 4852291, 2022-05-15T14:06:40-0400
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: Este-Light by Michael Prewitt
+ * URL: https://www.myfonts.com/fonts/michael-prewitt/este/light/
+ * Copyright: Michael Prewitt © 2021 All rights reserved.
+ * 
+ * 
+ * 
+ * © 2022 MyFonts Inc
+*/
+
+
+
+  
+@font-face {
+  font-family: "Este-Light";
+  src: url('webFonts/EsteLight/font.woff2') format('woff2'), url('webFonts/EsteLight/font.woff') format('woff');
+}
+

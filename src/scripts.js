@@ -9,6 +9,12 @@
 var User = require('./User');
 var UserRepository = require('./UserRepository');
 const userData = require('./data/users');
+import './css/styles.css';
+import './images/water.png'
+import './images/exercise.png'
+import './images/sleep.png'
+import './images/logo.png'
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Build User Repository 👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
