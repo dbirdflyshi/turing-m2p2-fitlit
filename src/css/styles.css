@@ -94,7 +94,7 @@ header{
 }
 
 .body{
-	margin-right: 150px;
+	margin-right: 50px;
 	display:flex;
 	flex-direction: column;
 	padding: 5px;
