@@ -185,13 +185,14 @@ select{
 	border-radius: 8px;
 	height: 85%;
 }
-.user{
+.user, .friends{
 	background-color:#616e76;
 	margin:5px;
 	border-radius: 8px;
 	margin: 7px 7px 15px 15px;
+	width: 60%;
 }
-.user ul{
+.user ul, .friends ul{
 	list-style-type:none;
 	text-align:left;
 	padding:15px;
@@ -199,29 +200,21 @@ select{
 }
 
 .friends{
-	display:flex;
-	flex-direction: column;
-	align-items:center;
-	background-color:#616e76;
-	margin:5px;
-	border-radius: 8px;
 	margin: 7px 15px 15px 7px;
+	width: 40%;
 }
+
 .friends h4{
 	text-align:center;
-}
-.friends ul {
-	list-style-type: none;
-	text-align: left;
-	margin: 0px 15px 0px 15px;
-	line-height: 30px;
-	overflow:auto;
 }
 .friends li{
 	background-color: #7b8794;
 	border-radius: 8px;	
 	margin-left:-40px;
 	padding: 0px 10px 0px 10px;
+	margin: 10px 0px;
+	color: rgba(230, 196, 157, 1);
+	text-align:center;
 }
 .bottom{
 	display:flex;
