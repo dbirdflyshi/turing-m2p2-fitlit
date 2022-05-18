@@ -14,13 +14,18 @@
 }
 @import url('https://fonts.googleapis.com/css2?family=Nunito&family=Open+Sans:wght@300&display=swap');
 
+html{
+	height: 100%;
+}
+
 body {
-	/* display:flex;
-	flex-direction: row; */
+	display:flex;
+	flex-direction: row;
 	background: #1f2933;
 	color: rgb(223, 223, 223);
 	font-family: 'Nunito',sans-serif;
-	
+	height: 98%;
+	justify-content:space-between;
 }
 
 nav{
@@ -66,16 +71,19 @@ nav{
 main{
 	display:flex;
 	flex-direction: column;
-	padding-left: 150px;
-	padding-top: 10px;
-	
+	padding: 10px 0px 0px 150px;
+	height: 100%;
+	width: 90%;
+	justify-content: space-between;
 }
 
 header{
 	display:flex;
 	flex-direction: row;
 	gap: 25%;
+	height: 10%;
 }
+
 .welcome{
 	display:flex;
 	flex-direction: row;
@@ -97,12 +105,15 @@ header{
 	margin-right: 50px;
 	display:flex;
 	flex-direction: column;
+	justify-content: space-around;
 	padding: 5px;
+	height:90%;
 }
 .top{
 	display:flex;
 	flex-direction: row;
 	justify-content: space-between;
+	height: 60%;
 }
 
 .metrics h3{
@@ -196,7 +207,7 @@ select{
 .user ul, .friends ul{
 	list-style-type:none;
 	text-align:left;
-	padding:15px;
+	padding: 0px 15px 5px 15px;
 	line-height: 30px;
 }
 
@@ -223,8 +234,9 @@ select{
 	background-color:#3e4c59;
 	border-radius: 8px;
 	margin: 15px;
-	height: 275px;
+	height: 40%;
 }
+
 .line-chart{
 	height: 100%;
 	margin: 15px;
@@ -232,9 +244,9 @@ select{
 	border-radius: 8px;
 }
 canvas {
-	height: 200px !important;
-	
+	height: 100% !important;
 }
+
 .chart-title h3{
 	margin: 15px 0px 0px 15px;
 }

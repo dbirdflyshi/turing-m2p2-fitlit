@@ -47,7 +47,7 @@ var chartTitle = document.querySelector('#chartTitle');
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Global Variables Go here 👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+var myChart = null;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Loads the function orchestrator 👇
@@ -257,17 +257,17 @@ function dateDropDates(data, instance) {
     data.forEach((point) => { dateList += `<option value=${point.date}>${point.date}</option>` });
     switch (instance) {
         case '1': dateDrop1.querySelector("#dates1").innerHTML = `<select name="dates" id="dates1">
-                                                                            <option value="none" selected disabled hidden>Select a Date</option>
-                                                                            ${dateList}
-                                                                            </select>`
+                                                                  <option value="none" selected disabled hidden>Select a Date</option>
+                                                                  ${dateList}
+                                                                  </select>`
         case '2': dateDrop1.querySelector("#dates1").innerHTML = `<select name="dates" id="dates1">
-                                                                            <option value="none" selected disabled hidden>Select a Date</option>
-                                                                            ${dateList}
-                                                                            </select>`
-            dateDrop2.querySelector("#dates2").innerHTML = `<select name="dates" id="dates1">
-                                                                            <option value="none" selected disabled hidden>Select a Date</option>
-                                                                            ${dateList}
-                                                                            </select>`
+                                                                  <option value="none" selected disabled hidden>Select a Date</option>
+                                                                  ${dateList}
+                                                                  </select>`
+                 dateDrop2.querySelector("#dates2").innerHTML = `<select name="dates" id="dates1">
+                                                                 <option value="none" selected disabled hidden>Select a Date</option>
+                                                                 ${dateList}
+                                                                 </select>`
     }
 }
 
@@ -275,11 +275,104 @@ function dateDropDates(data, instance) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Return Chosen Date Data 👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function chooseDate(data, instance) {
+function chooseDate(data, instance, metric) {
     var selection = document.getElementById(`dates${instance}`);
     var option = selection.options[selection.selectedIndex].value;
     var foundPoint = data.find((point) => point.date === option);
-    return foundPoint.numOunces;
+    switch(metric){
+        case 'hydration': return foundPoint.numOunces;
+        break
+        case 'sleep': return foundPoint.hoursSlept;
+        break
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Draw The Line Chart 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function drawChart(data,metric) {
+    if (myChart != null) {
+        myChart.destroy();
+    }
+    switch (metric) {
+        case 'hydration': var labels = [
+            data[data.length - 7].date,
+            data[data.length - 6].date,
+            data[data.length - 5].date,
+            data[data.length - 4].date,
+            data[data.length - 3].date,
+            data[data.length - 2].date,
+            data[data.length - 1].date
+        ];
+        break
+        case 'sleep': var labels = [
+            data[data.length - 7].week,
+            data[data.length - 6].week,
+            data[data.length - 5].week,
+            data[data.length - 4].week,
+            data[data.length - 3].week,
+            data[data.length - 2].week,
+            data[data.length - 1].week
+        ];
+        break
+    }
+    switch(metric){
+        case 'hydration': data = [data[data.length - 7].numOunces,
+                            data[data.length - 6].numOunces,
+                            data[data.length - 5].numOunces,
+                            data[data.length - 4].numOunces,
+                            data[data.length - 3].numOunces,
+                            data[data.length - 2].numOunces,
+                            data[data.length - 1].numOunces]
+        break
+        case 'sleep': data = [data[data.length - 7].hoursSlept,
+                            data[data.length - 6].hoursSlept,
+                            data[data.length - 5].hoursSlept,
+                            data[data.length - 4].hoursSlept,
+                            data[data.length - 3].hoursSlept,
+                            data[data.length - 2].hoursSlept,
+                            data[data.length - 1].hoursSlept]
+        }
+    
+    const dataTest = {
+        labels: labels,
+        datasets: [{
+            backgroundColor: '#616e76',
+            borderColor: 'rgba(230, 196, 157, 1)',
+            data: data
+        }]
+    };
+    const config = {
+        type: 'line',
+        data: dataTest,
+        options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: 'rgb(223, 223, 223)' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: 'rgb(223, 223, 223)' }
+                }
+            },
+            layout: {
+                padding: {
+                    top:20,
+                    right: 50,
+                    bottom: 20,
+                    left: 20
+                }
+            }
+        }
+    };
+    myChart = new Chart(
+        document.getElementById('line-chart'),
+        config
+    );
 }
 
 
@@ -311,11 +404,12 @@ function hydration(data,id){
     metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Daily oz Consumed';
     metric3.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userHydrationData);
     dateDrop1.querySelector('.metric-title').querySelector('p').innerHTML = 'Water oz Consumed On This Date';
+    dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = '';
     document.getElementById("dates1").onchange = () => {
-        dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userHydrationData, '1');
+        dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userHydrationData, '1', 'hydration');
     };
-    drawChart(userHydrationData)
-
+    
+    drawChart(userHydrationData,'hydration')
 }
 
 
@@ -345,76 +439,14 @@ function totalWaterConsumed(data) {
     return total;
 };
 
-function drawChart(data){
-    const labels = [
-        data[data.length - 7].date,
-        data[data.length - 6].date,
-        data[data.length - 5].date,
-        data[data.length - 4].date,
-        data[data.length - 3].date,
-        data[data.length - 2].date,
-        data[data.length - 1].date,
-    ];
-
-    const dataTest = {
-        labels: labels,
-        datasets: [{
-            backgroundColor: '#616e76',
-            borderColor: 'rgba(230, 196, 157, 1)',
-            data: [ data[data.length - 7].numOunces, 
-                    data[data.length - 6].numOunces, 
-                    data[data.length - 5].numOunces, 
-                    data[data.length - 4].numOunces, 
-                    data[data.length - 3].numOunces, 
-                    data[data.length - 2].numOunces,
-                    data[data.length - 1].numOunces
-                ],
-        }]
-    };
-
-    const config = {
-        type: 'line',
-        data: dataTest,
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: 'rgb(223, 223, 223)'
-                    }
-                },
-                y: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: 'rgb(223, 223, 223)'
-                    }
-                }
-            }
-        }
-    };
-    const myChart = new Chart(
-        document.getElementById('line-chart'),
-        config
-    );
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Sleep   👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function sleep(data, id) {
     title.innerHTML = '💤 Sleep 💤'
+    chartTitle.innerHTML = 'Hours Slept Over The Last 7 Weeks'
+    data = weekSleep(data);
     var userSleepData = queryUserMetric(data, id)
     metric1.style.display = 'flex';
     metric2.style.display = 'flex';
@@ -428,32 +460,135 @@ function sleep(data, id) {
     dateDrop1.style.display = 'flex';
     dateDrop2.style.display = 'flex';
     dateDropDates(userSleepData, '1');
-    //dateDropDates(userSleepData, '2');
-    
+    weekDropDates(userSleepData);
+    var weeklyAggregate = aggregateSleep(userSleepData);
     metric1.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept Today';
-    //metric1.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userSleepData);
+    metric1.querySelector('.metric-metric').querySelector('p').innerHTML = hoursSleptToday(userSleepData);
     metric2.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Hours Slept';
-    //metric2.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userSleepData);
+    metric2.querySelector('.metric-metric').querySelector('p').innerHTML = avgSlept(userSleepData);
     metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Total Hours Slept';
-    //metric3.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userSleepData);
+    metric3.querySelector('.metric-metric').querySelector('p').innerHTML = totalSleep(userSleepData);
     metric4.querySelector('.metric-title').querySelector('p').innerHTML = 'Sleep Quality Today';
-    //metric4.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userSleepData);
+    metric4.querySelector('.metric-metric').querySelector('p').innerHTML = todaySleepQuality(userSleepData);
     metric5.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Sleep Quality';
-    //metric5.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userSleepData);
+    metric5.querySelector('.metric-metric').querySelector('p').innerHTML = avgSleepQuality(userSleepData);
     metric6.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Sleep Quality For All Users';
-    //metric6.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userSleepData);
-
+    metric6.querySelector('.metric-metric').querySelector('p').innerHTML = avgSleepQuality(data);
+    dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = '';
     dateDrop1.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept For This Day';
-    //document.getElementById("dates1").onchange = () => {
-    //    dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userSleepData);
-    //};
+    document.getElementById("dates1").onchange = () => {
+       dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userSleepData, '1', 'sleep');
+    };
+    dateDrop2.querySelector('.metric-metric').querySelector('p').innerHTML = '';
     dateDrop2.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept For This Week';
-    //document.getElementById("dates2").onchange = () => {
-    //    dateDrop2.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userSleepData);
-    //};
+    document.getElementById("dates2").onchange = () => {
+        dateDrop2.querySelector('.metric-metric').querySelector('p').innerHTML = chooseWeek(weeklyAggregate);
+    };
+    drawChart(weeklyAggregate,'sleep');
 }
 
 
+// Getting today's sleep
+function hoursSleptToday(data) {
+    var today = data.slice(-1)[0]
+    var todayNum = data.find((point) => point === today);
+    return todayNum.hoursSlept;
+}
+
+
+// Getting the total sleep
+function totalSleep(data) {
+    var total = data.reduce((acc, point) => {
+        acc += point.hoursSlept;
+        return acc;
+    }, 0)
+    return Math.round(total);
+};
+
+
+// Getting the average sleep
+function avgSlept(data) {
+    var total = totalSleep(data);
+    var days = data.length;
+    var avg = total / days;
+    return Math.round(avg);
+};
+
+
+// Getting today's sleep quality
+function todaySleepQuality(data) {
+    var today = data.slice(-1)[0]
+    var todayNum = data.find((point) => point === today);
+    return todayNum.sleepQuality;
+}
+
+
+// Getting the total sleep quality
+function totalSleepQuality(data) {
+    var total = data.reduce((acc, point) => {
+        acc += point.sleepQuality;
+        return acc;
+    }, 0)
+    return Math.round(total);
+};
+
+
+// Getting the average sleep quality
+function avgSleepQuality(data) {
+    var total = totalSleepQuality(data);
+    var days = data.length;
+    var avg = total / days;
+    return Math.round(10*avg)/10;
+};
+
+function weekSleep(data){
+    var newData = data.reduce((acc,point) =>{
+        const year = +point.date.substring(0, 4);
+        const month = +point.date.substring(5, 7);
+        const day = +point.date.substring(8, 10);
+        const date = new Date(year, month-1, day);
+        var startDate = new Date(date.getFullYear(), 0, 1);
+        var days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+        var weekNumber = Math.ceil((date.getDay() + 1 + days) / 7);
+        point['week'] = `${year}-${weekNumber}`;
+        acc.push(point);
+        return acc
+    },[])
+    return newData;
+}
+
+// Populate week drop down
+function weekDropDates(data) {
+    var dateList = '';
+    data.forEach((point) => { dateList += `<option value=${point.week}>${point.week}</option>` });
+    dateDrop2.querySelector("#dates2").innerHTML = `<select name="dates" id="dates1">
+                                                    <option value="none" selected disabled hidden>Select a Date</option>
+                                                    ${dateList}
+                                                    </select>`;
+}
+
+function aggregateSleep(data){
+    var agg = data.reduce((acc, point) => {
+        const index = acc.findIndex(obj => obj.week === point.week);
+        if (index !== -1) {
+            acc[index].hoursSlept += Math.round(point.hoursSlept);
+        } else {
+            acc.push({
+                week: point.week,
+                hoursSlept: point.hoursSlept
+            });
+        };
+        return acc;
+    }, []);
+    return agg;
+};
+
+function chooseWeek(data) {
+    var selection = document.getElementById("dates2");
+    var option = selection.options[selection.selectedIndex].value;
+    var foundPoint = data.find((point) => point.week === option);
+    return foundPoint.hoursSlept;
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Activity   👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
