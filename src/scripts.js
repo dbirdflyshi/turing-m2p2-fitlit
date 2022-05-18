@@ -24,7 +24,8 @@ import{
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // query selector variables go here 👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var userCard = document.querySelector('#userData')
+var title = document.querySelector('#title');
+var userCard = document.querySelector('#userData');
 var userList = document.querySelector('#users');
 var friendsCard = document.querySelector('#friends-list')
 var hydrationButton = document.querySelector('#hydration');
@@ -41,7 +42,7 @@ var metric8 = document.querySelector('#metric8');
 var metric9 = document.querySelector('#metric9');
 var dateDrop1 = document.querySelector('#dateDrop1');
 var dateDrop2 = document.querySelector('#dateDrop2');
-
+var chartTitle = document.querySelector('#chartTitle');
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Global Variables Go here 👇
@@ -108,7 +109,6 @@ function loadAllData(){
                 break
             }
         };
-
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Load Defaults 👇
@@ -230,9 +230,9 @@ function loadMetrics(type,data,id){
     switch(type){
         case 'hydration': hydration(data,id);
         break
-        case 'sleep': sleep(id);
+        case 'sleep': sleep(data,id);
         break
-        case 'activity': activity(id);
+        case 'activity': activity(data,id);
         break
     }
 }
@@ -250,38 +250,93 @@ function queryUserMetric(data,id){
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Populate Date Drop Down 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function dateDropDates(data, instance) {
+    var dateList = '';
+    data.forEach((point) => { dateList += `<option value=${point.date}>${point.date}</option>` });
+    switch (instance) {
+        case '1': dateDrop1.querySelector("#dates1").innerHTML = `<select name="dates" id="dates1">
+                                                                            <option value="none" selected disabled hidden>Select a Date</option>
+                                                                            ${dateList}
+                                                                            </select>`
+        case '2': dateDrop1.querySelector("#dates1").innerHTML = `<select name="dates" id="dates1">
+                                                                            <option value="none" selected disabled hidden>Select a Date</option>
+                                                                            ${dateList}
+                                                                            </select>`
+            dateDrop2.querySelector("#dates2").innerHTML = `<select name="dates" id="dates1">
+                                                                            <option value="none" selected disabled hidden>Select a Date</option>
+                                                                            ${dateList}
+                                                                            </select>`
+    }
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Return Chosen Date Data 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function chooseDate(data, instance) {
+    var selection = document.getElementById(`dates${instance}`);
+    var option = selection.options[selection.selectedIndex].value;
+    var foundPoint = data.find((point) => point.date === option);
+    return foundPoint.numOunces;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Hydration   👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// The main method to orchestrate all hydration tasks
 function hydration(data,id){
+    title.innerHTML = '🚰 Hydration🚰'
+    chartTitle.innerHTML = 'Water Consumption Over The Last 7 Days'
     var userHydrationData = queryUserMetric(data, id)
+    dateDropDates(userHydrationData, '1');
     metric1.style.display = 'flex';
     metric2.style.display = 'flex';
     metric3.style.display = 'flex';
+    metric4.style.display = 'none';
+    metric5.style.display = 'none';
+    metric6.style.display = 'none';
+    metric7.style.display = 'none';
+    metric8.style.display = 'none';
+    metric9.style.display = 'none';
     dateDrop1.style.display = 'flex';
-    metric1.querySelector('.metric-title').querySelector('p').innerHTML = 'Water Consumed Today';
+    dateDrop2.style.display = 'none';
+
+    metric1.querySelector('.metric-title').querySelector('p').innerHTML = 'Water oz Consumed Today';
     metric1.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userHydrationData);
-    metric2.querySelector('.metric-title').querySelector('p').innerHTML = 'Total Water Consumed';
+    metric2.querySelector('.metric-title').querySelector('p').innerHTML = 'Total Water oz Consumed';
     metric2.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userHydrationData);
-    metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Daily Consumed';
+    metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Daily oz Consumed';
     metric3.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userHydrationData);
+    dateDrop1.querySelector('.metric-title').querySelector('p').innerHTML = 'Water oz Consumed On This Date';
+    document.getElementById("dates1").onchange = () => {
+        dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userHydrationData, '1');
+    };
+    drawChart(userHydrationData)
+
 }
 
+
+// Getting today's water consumption
 function waterConsumedToday(data){
     var today = data.slice(-1)[0]
     var waterConsumedToday = data.find((point) => point === today);
     return waterConsumedToday.numOunces;
 }
 
+
+// Getting the average water consumed
 function avgWaterConsumed(data) {
-    var total = data.reduce((acc, point) => {
-        acc += point.numOunces;
-        return acc;
-    }, 0)
+    var total = totalWaterConsumed(data);
     var days = data.length;
     var avg = total / days;
     return Math.round(avg);
 };
 
+
+// Getting the total water consumed
 function totalWaterConsumed(data) {
     var total = data.reduce((acc, point) => {
         acc += point.numOunces;
@@ -290,11 +345,112 @@ function totalWaterConsumed(data) {
     return total;
 };
 
+function drawChart(data){
+    const labels = [
+        data[data.length - 7].date,
+        data[data.length - 6].date,
+        data[data.length - 5].date,
+        data[data.length - 4].date,
+        data[data.length - 3].date,
+        data[data.length - 2].date,
+        data[data.length - 1].date,
+    ];
+
+    const dataTest = {
+        labels: labels,
+        datasets: [{
+            backgroundColor: '#616e76',
+            borderColor: 'rgba(230, 196, 157, 1)',
+            data: [ data[data.length - 7].numOunces, 
+                    data[data.length - 6].numOunces, 
+                    data[data.length - 5].numOunces, 
+                    data[data.length - 4].numOunces, 
+                    data[data.length - 3].numOunces, 
+                    data[data.length - 2].numOunces,
+                    data[data.length - 1].numOunces
+                ],
+        }]
+    };
+
+    const config = {
+        type: 'line',
+        data: dataTest,
+        options: {
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'rgb(223, 223, 223)'
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'rgb(223, 223, 223)'
+                    }
+                }
+            }
+        }
+    };
+    const myChart = new Chart(
+        document.getElementById('line-chart'),
+        config
+    );
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Sleep   👇
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function sleep(id) {
+function sleep(data, id) {
+    title.innerHTML = '💤 Sleep 💤'
+    var userSleepData = queryUserMetric(data, id)
+    metric1.style.display = 'flex';
+    metric2.style.display = 'flex';
+    metric3.style.display = 'flex';
+    metric4.style.display = 'flex';
+    metric5.style.display = 'flex';
+    metric6.style.display = 'flex';
+    metric7.style.display = 'none';
+    metric8.style.display = 'none';
+    metric9.style.display = 'none';
+    dateDrop1.style.display = 'flex';
+    dateDrop2.style.display = 'flex';
+    dateDropDates(userSleepData, '1');
+    //dateDropDates(userSleepData, '2');
+    
+    metric1.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept Today';
+    //metric1.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userSleepData);
+    metric2.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Hours Slept';
+    //metric2.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userSleepData);
+    metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Total Hours Slept';
+    //metric3.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userSleepData);
+    metric4.querySelector('.metric-title').querySelector('p').innerHTML = 'Sleep Quality Today';
+    //metric4.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userSleepData);
+    metric5.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Sleep Quality';
+    //metric5.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userSleepData);
+    metric6.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Sleep Quality For All Users';
+    //metric6.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userSleepData);
+
+    dateDrop1.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept For This Day';
+    //document.getElementById("dates1").onchange = () => {
+    //    dateDrop1.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userSleepData);
+    //};
+    dateDrop2.querySelector('.metric-title').querySelector('p').innerHTML = 'Hours Slept For This Week';
+    //document.getElementById("dates2").onchange = () => {
+    //    dateDrop2.querySelector('.metric-metric').querySelector('p').innerHTML = chooseDate(userSleepData);
+    //};
 }
 
 

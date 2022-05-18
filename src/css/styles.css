@@ -1,4 +1,4 @@
-.design-pallet{
+.design-pallete{
 	/*900*/
 	color: #1f2933;
 	/*800*/
@@ -144,7 +144,7 @@ header{
 	display:flex;
 	flex-direction: column;
 	border-radius: 8px;
-	width: 50%;
+	width: 230px;
 }
 .date-drop{
 	display:flex;
@@ -173,7 +173,7 @@ select{
 	background-color:#3e4c59;
 	border-radius: 8px;
 	margin: 15px;
-	width: 48%;
+	width: 70%;
 }
 .user-info h3{
 	text-align: center;
@@ -184,6 +184,7 @@ select{
 	flex-direction: row;
 	border-radius: 8px;
 	height: 85%;
+	width: 100%;
 }
 .user, .friends{
 	background-color:#616e76;
@@ -222,13 +223,17 @@ select{
 	background-color:#3e4c59;
 	border-radius: 8px;
 	margin: 15px;
-	height: 250px;
+	height: 275px;
 }
 .line-chart{
 	height: 100%;
 	margin: 15px;
 	background-color: #616e76;
 	border-radius: 8px;
+}
+canvas {
+	height: 200px !important;
+	
 }
 .chart-title h3{
 	margin: 15px 0px 0px 15px;
