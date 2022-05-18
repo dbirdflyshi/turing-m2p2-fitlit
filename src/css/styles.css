@@ -222,13 +222,18 @@ select{
 	background-color:#3e4c59;
 	border-radius: 8px;
 	margin: 15px;
+	height: 250px;
 }
 .line-chart{
-	height: 250px;
+	height: 100%;
 	margin: 15px;
 	background-color: #616e76;
 	border-radius: 8px;
 }
 .chart-title h3{
 	margin: 15px 0px 0px 15px;
+}
+
+#metric1,#metric2,#metric3,#metric4,#metric5,#metric6,#metric7,#metric8,#metric9,#dateDrop1,#dateDrop2{
+	display: none;
 }

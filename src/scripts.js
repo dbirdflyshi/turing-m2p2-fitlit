@@ -27,9 +27,20 @@ import{
 var userCard = document.querySelector('#userData')
 var userList = document.querySelector('#users');
 var friendsCard = document.querySelector('#friends-list')
-var waterButton = document.querySelector('#water');
-var exerciseButton = document.querySelector('#water');
-var sleepButton = document.querySelector('#water');
+var hydrationButton = document.querySelector('#hydration');
+var activityButton = document.querySelector('#activity');
+var sleepButton = document.querySelector('#sleep');
+var metric1 = document.querySelector('#metric1');
+var metric2 = document.querySelector('#metric2');
+var metric3 = document.querySelector('#metric3');
+var metric4 = document.querySelector('#metric4');
+var metric5 = document.querySelector('#metric5');
+var metric6 = document.querySelector('#metric6');
+var metric7 = document.querySelector('#metric7');
+var metric8 = document.querySelector('#metric8');
+var metric9 = document.querySelector('#metric9');
+var dateDrop1 = document.querySelector('#dateDrop1');
+var dateDrop2 = document.querySelector('#dateDrop2');
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,26 +63,58 @@ function loadAllData(){
                  fetchHydrationData(),
                  fetchActivityData()
     ]).then(data => {
+
+
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Build User Data 👇
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         const userDataList = buildRepo(data[0].userData);
-        //const userSleepData = buildRepo(data[1]);
+        const userSleepData = data[1].sleepData;
         const userHydrationData = data[2].hydrationData;
-        console.log(userHydrationData[0]);
+        const userActivityData = data[2].activityData;
+
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // Variables 👇
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        let currentId = 1;
+        let currentMetric = 'hydration'
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // event listeners 👇
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        //waterButton.addEventListener('click', outputSomething);
-        //document.getElementById("users").onchange = chooseUser;
-        document.getElementById("users").onchange = () => chooseUser(userDataList);
+        hydrationButton.addEventListener('click', () => {
+            loadMetrics('hydration',userHydrationData, currentId)
+            currentMetric = 'hydration';
+        });
+        // activityButton.addEventListener('click', () => {
+        //     loadMetrics('activity', userActivityData, currentId)
+        //     currentMetric = 'activity';
+        // });
+        sleepButton.addEventListener('click', () => {
+            loadMetrics('sleep', userSleepData, currentId)
+            currentMetric = 'sleep';           
+        });
+
+        document.getElementById("users").onchange = () => {
+            chooseUser(userDataList);
+            currentId = returnUserID(userDataList);
+            switch(currentMetric){
+                case 'hydration': loadMetrics(currentMetric, userHydrationData, currentId);
+                break
+                case 'activity': loadMetrics(currentMetric, userActivityData, currentId);
+                break
+                case 'sleep': loadMetrics(currentMetric, userSleepData, currentId);
+                break
+            }
+        };
 
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Load User Info Sidebar 👇
+        // Load Defaults 👇
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         loadUserData(userDataList, 1);
+        loadMetrics('hydration',userHydrationData, 1)
 
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -79,10 +122,7 @@ function loadAllData(){
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         loadUserListDropdown(userDataList);
 
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Load Default Hydration 👇
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        //loadHydrationMetrics();
+
     })
 }
 
@@ -172,3 +212,94 @@ function chooseUser(userDataList) {
     loadUserData(userDataList, option);
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Gets The Active User ID 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function returnUserID(userDataList){
+    var selection = document.getElementById("users");
+    var option = parseInt(selection.options[selection.selectedIndex].value);
+    return option;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Central Hub Of Metrics 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function loadMetrics(type,data,id){
+    switch(type){
+        case 'hydration': hydration(data,id);
+        break
+        case 'sleep': sleep(id);
+        break
+        case 'activity': activity(id);
+        break
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Pull Specific User Metrics 👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function queryUserMetric(data,id){
+    var userMetric = data.reduce((acc,dataPoint) =>{
+        dataPoint.userID === id? acc.push(dataPoint):null;
+        return acc;
+    },[])
+    return userMetric;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Hydration   👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function hydration(data,id){
+    var userHydrationData = queryUserMetric(data, id)
+    metric1.style.display = 'flex';
+    metric2.style.display = 'flex';
+    metric3.style.display = 'flex';
+    dateDrop1.style.display = 'flex';
+    metric1.querySelector('.metric-title').querySelector('p').innerHTML = 'Water Consumed Today';
+    metric1.querySelector('.metric-metric').querySelector('p').innerHTML = waterConsumedToday(userHydrationData);
+    metric2.querySelector('.metric-title').querySelector('p').innerHTML = 'Total Water Consumed';
+    metric2.querySelector('.metric-metric').querySelector('p').innerHTML = totalWaterConsumed(userHydrationData);
+    metric3.querySelector('.metric-title').querySelector('p').innerHTML = 'Avg Daily Consumed';
+    metric3.querySelector('.metric-metric').querySelector('p').innerHTML = avgWaterConsumed(userHydrationData);
+}
+
+function waterConsumedToday(data){
+    var today = data.slice(-1)[0]
+    var waterConsumedToday = data.find((point) => point === today);
+    return waterConsumedToday.numOunces;
+}
+
+function avgWaterConsumed(data) {
+    var total = data.reduce((acc, point) => {
+        acc += point.numOunces;
+        return acc;
+    }, 0)
+    var days = data.length;
+    var avg = total / days;
+    return Math.round(avg);
+};
+
+function totalWaterConsumed(data) {
+    var total = data.reduce((acc, point) => {
+        acc += point.numOunces;
+        return acc;
+    }, 0)
+    return total;
+};
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Sleep   👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function sleep(id) {
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Activity   👇
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function activity(id) {
+}
